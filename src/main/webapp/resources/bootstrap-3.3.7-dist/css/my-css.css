@@ -1,0 +1,142 @@
+#header,.header{
+	margin-top:30px;
+	margin-bottom:30px;
+	font-family:Roboto;
+}
+.h_title a,.h_title a:hover,.h_title a:active,.h_title a:focus{
+	text-decoration:none;
+	color:#6b6b6b;
+}
+.h_nav a,.h_nav a:focus{
+	text-decoration:none;
+	color:#6b6b6b;
+}
+.h_nav a:hover{
+	text-decoration:none;
+	color:#d65728;
+}
+.h_nav a:active{
+	text-decoration:none;
+	color:#d65728;
+}
+.h_shop{
+	float:right;
+}
+.f_corp,.f_rights{
+	margin-left:10em;
+}
+.f_sns{
+	margin-right:10em;
+}
+.f_corp img{
+	width:40px;
+	height:40px;
+}
+.f_sns img{
+	align:right;
+	width:20px;
+	height:20px;
+}
+.ver_center {
+    display: flex;
+    align-items: flex-end;
+}
+.p_list a{
+	text-decoration:none;
+	color:#6b6b6b;
+}
+.p_list a:hover{
+	text-decoration:none;
+	color:#d65728;
+}
+.ver_center {
+    display: flex;
+    align-items: center;
+}
+.hor_center{
+	display:flex;
+	justify-content: center;
+}
+.l_title,.a_title,.u_title{
+	color:#6b6b6b;
+}
+.l_article,.a_article,.u_article{
+	color:#8b8b8b;
+}
+ .carousel-inner > .item > img,
+ .carousel-inner > .item > a > img {
+     display: block;
+     min-width: 100%;
+     height: 400px !important;
+ }
+#login-container {
+	width: 400px;
+	border: 1px solid #6b6b6b;
+	padding: 10px;
+}
+#login-container div h3{
+	text-align: center;
+}
+/* #register-container {
+	width: 400px;
+	border: 1px solid #6b6b6b;
+	padding: 10px;
+}
+#register-container div h3{
+	text-align: center;
+} */
+#reservation-container {
+	width: 550px;
+	border: 1px solid #6b6b6b;
+	padding: 10px;
+}
+#reservation-container div h3{
+	text-align: center;
+}
+#register-compl {
+	text-align:center;
+}
+.preview-panel {
+	text-align: center;
+    background-color: #f5f5f5;
+    margin-bottom: 30px;
+    border-radius: 4px;
+    border-bottom: 3px solid #eeeeee;
+    position: relative;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.preview-panel-content {
+    padding: 30px 15px;
+}
+.badge-new {
+    color: black;
+    font-size: 14px;
+    line-height: 28px;
+    top: -6px;
+    right: -10px;
+    font-family: 'Patrick Hand SC';
+    position: absolute;
+    height: 32px;
+    width: 32px;
+    background: #FCD670;
+    border-bottom: 2px solid #fac125;
+    border-radius: 100%;
+    -ms-transform: rotate(-12deg);
+    -webkit-transform: rotate(-12deg);
+    transform: rotate(-12deg);
+    text-transform: none;
+}
+.reply-body {
+	border: 1px solid black;
+	padding: 10px;
+}
+.reply-line{
+	margin-top: -0.09px;
+	margin-bottom: 7px;
+	text-align: right;
+}
+ul.timeline{
+	list-style:none;
+}

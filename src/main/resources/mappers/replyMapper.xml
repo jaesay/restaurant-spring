@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.spring.mapper.ReplyMapper">
+<insert id="create">
+	insert into tbl_reply (rno, m_id, replytext, replyer, rating)
+	values (seq_reply.nextval, #{m_id}, #{replytext}, #{replyer},#{rating})
+</insert>
+<select id="list" resultType="ReplyVO">
+	select * from tbl_reply where m_id = #{m_id} order by rno desc
+</select>
+<update id="update">
+	update tbl_reply set replytext = #{replytext},
+	updatedate = sysdate, rating=#{rating} where rno = #{rno}
+</update>
+<delete id="delete">
+	delete from tbl_reply where rno = #{rno}
+</delete>
+<select id="listPage" resultType="ReplyVO">
+	<![CDATA[	
+		select
+			rno,m_id,replytext,replyer,regdate,updatedate, rating
+		from
+			(select
+				rownum rn, rno, m_id,replytext,replyer, rating, regdate,updatedate
+			from tbl_reply
+			where m_id = #{m_id}
+			)
+		where rn < ((select count(*) from tbl_reply)-((#{cri.page}-1) * #{cri.perPageNum}))
+		and rn >= ((select count(*) from tbl_reply)-(#{cri.page} * #{cri.perPageNum}))
+		order by regdate desc
+	]]>
+</select>
+<select id="count" resultType="int">
+	select count(rno) from tbl_reply where m_id = #{m_id}
+</select>
+<select id="getMId" resultType="int">
+	select m_id from tbl_reply where rno=#{rno}
+</select>
+</mapper>

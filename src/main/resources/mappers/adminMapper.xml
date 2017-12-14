@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.spring.mapper.AdminMapper">
+
+	<resultMap type="org.spring.domain.MenuVO" id="Menu">
+		<id column="m_id" property="m_id"/>
+		<result column="m_category" property="m_category"/>
+		<result column="m_name" property="m_name"/>
+		<result column="m_content" property="m_content"/>
+		<result column="m_price" property="m_price"/>
+		<result column="m_hit" property="m_hit"/>
+		<result column="m_rdate" property="m_rdate"/>
+		<result column="m_img" property="m_img"/>
+		<result column="replycnt" property="replycnt"/>
+		<result column="m_rating" property="m_rating"/>
+	</resultMap>
+	
+	<resultMap type="org.spring.domain.ReplyVO" id="Reply">
+		<id column="rno" property="rno"/>
+		<result column="u_email" property="u_email"/>
+		<result column="m_id" property="m_id"/>
+		<result column="replytext" property="replytext"/>
+		<result column="replyer" property="replyer"/>
+		<result column="rating" property="rating"/>
+		<result column="regdate" property="regdate"/>
+		<result column="updatedate" property="updatedate"/>
+		<association property="mvo" resultMap="Menu"/>
+	</resultMap>
+
+<sql id="search">
+	<if test="searchType != null">
+		<if test="searchType == 'email'.toString()">
+			and u_email like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'name'.toString()">
+			and u_name like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="umlistAll" resultType="org.spring.domain.UserVO">
+	select
+		*
+	from
+		tbl_user
+	order by u_rdate desc
+</select>
+<select id="umcountPaging" resultType="int">
+	select count(u_email) from tbl_user
+</select>
+<select id="umlistSearch" resultType="org.spring.domain.UserVO">
+	<![CDATA[
+	select
+		u_email, u_name, u_pwd, u_rdate
+	from
+		(select
+			rownum rn, u_email, u_name, u_pwd, u_rdate
+		from 
+			(select * from tbl_user where u_email !='admin@songjjuzip.com' order by u_rdate desc)
+		where 
+			1=1 
+		]]>
+		<include refid="search"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="umlistSearchCount" resultType="int">
+	<![CDATA[
+	select count(u_email) from tbl_user where 1=1 
+	]]>
+	<include refid="search"></include>
+</select>
+<delete id="umremove" parameterType="hashmap">
+	delete from tbl_user where u_email in (#{email0},#{email1},#{email2},#{email3},#{email4},#{email5},#{email6},#{email7},#{email8},#{email9})
+</delete>
+<select id="umread" resultType="org.spring.domain.UserVO">
+	select * from tbl_user where u_email=#{u_email}
+</select>
+<update id="umupdate">
+	update tbl_user set u_name=#{u_name}, u_pwd=#{u_pwd} where u_email = #{u_email}
+</update>
+<insert id="uminsert">
+	INSERT INTO
+			tbl_user (u_email, u_name, u_pwd)
+		VALUES(
+			#{u_email},#{u_name},#{u_pwd}
+		)
+</insert>
+<insert id="postMenu">
+	insert into 
+			tbl_menu (m_id, m_category, m_name, m_content,m_price, m_img)
+		values(
+			seq_mid.nextval, #{m_category}, #{m_name}, #{m_content}, #{m_price}, #{m_img}
+		)
+</insert>
+<select id="listMenu" resultType="org.spring.domain.MenuVO">
+	select
+		*
+	from
+		tbl_menu
+	order by m_id desc
+</select>
+<select id="readMenu" resultType="org.spring.domain.MenuVO">
+	select * from tbl_menu where m_id=#{m_id}
+</select>
+<delete id="deleteMenu">
+	delete from tbl_menu where m_id=#{m_id}
+</delete>
+<update id="editMenu">
+	update tbl_menu 
+		set m_category=#{m_category}, m_name=#{m_name}, m_content=#{m_content}, m_price=#{m_price}, m_hit=#{m_hit}, m_img=#{m_img}
+		where m_id = #{m_id}
+</update>
+<sql id="searchMenu">
+	<if test="searchType != null">
+		<if test="searchType == 'category'.toString()">
+			and m_category like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'name'.toString()">
+			and m_name like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="listMenuSearchCriteria" resultType="org.spring.domain.MenuVO">
+	<![CDATA[
+	select
+		m_id,m_category, m_name, m_content, m_price, m_hit, m_img, m_rdate, replycnt, m_rating
+	from
+		(select
+			rownum rn,  m_id,m_category, m_name, m_content, m_price, m_hit, m_rdate, m_img, replycnt, m_rating
+		from 
+			(select * from tbl_menu order by m_id desc)
+		where 
+			1=1 
+		]]>
+		<include refid="searchMenu"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="listMenuCountSearchCriteria" resultType="int">
+	<![CDATA[
+	select count(m_id) from tbl_menu where 1=1 
+	]]>
+	<include refid="searchMenu"></include>
+</select>
+
+<sql id="searchReplies">
+	<if test="searchType != null">
+		<if test="searchType == 'menuId'.toString()">
+			and m_id like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'writer'.toString()">
+			and replyer like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="listReviewSearchCriteria" resultMap="Reply">
+	<![CDATA[
+	select
+		*
+	from
+		(select
+			rownum rn, rno, m_id, replytext, replyer, rating, regdate, updatedate, m_category, m_name, m_content, m_price, m_hit, m_rdate, m_img, replycnt
+		from 
+			(select
+				r.rno, r.m_id, r.replytext, r.replyer, r.rating, r.regdate, r.updatedate, m.m_category, m.m_name, m.m_content, m.m_price, m.m_hit, m.m_rdate, m.m_img, m.replycnt 
+			 from
+			 	tbl_reply r INNER JOIN tbl_menu m
+			 on
+			 	r.m_id = m.m_id
+			 order by r.updatedate desc)
+		where 
+			1=1 
+		]]>
+		<include refid="searchReplies"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="listReviewCountSearchCriteria" resultType="int">
+	<![CDATA[
+	select count(rno) from tbl_reply where 1=1 
+	]]>
+	<include refid="searchReplies"></include>
+</select>
+<delete id="removeReplies" parameterType="hashmap">
+	delete from tbl_reply where rno in (#{rno0},#{rno1},#{rno2},#{rno3},#{rno4},#{rno5},#{rno6},#{rno7},#{rno8},#{rno9})
+</delete>
+
+<sql id="searchReservation">
+	<if test="searchType != null">
+		<if test="searchType == 'name'.toString()">
+			and r_name like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'phone'.toString()">
+			and r_phone like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'email'.toString()">
+			and r_email like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="listReservationSearchCriteria" resultType="org.spring.domain.ReservationVO">
+	<![CDATA[
+	select
+		*
+	from
+		(select
+			rownum rn, r_id, r_email, r_name, r_phone, r_message, r_date, r_time, r_people
+		from 
+			(select * from tbl_reservation order by r_date desc, r_time desc)
+		where 
+			1=1 
+		]]>
+		<include refid="searchReservation"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="listReservationCountSearchCriteria" resultType="int">
+	<![CDATA[
+	select count(r_id) from tbl_reservation where 1=1 
+	]]>
+	<include refid="searchReservation"></include>
+</select>
+<delete id="deleteReservation">
+	delete from tbl_reservation where r_id=#{r_id}
+</delete>
+<delete id="removeReservations" parameterType="hashmap">
+	delete from tbl_reservation where r_id in (#{r_id0},#{r_id1},#{r_id2},#{r_id3},#{r_id4},#{r_id5},#{r_id6},#{r_id7},#{r_id8},#{r_id9})
+</delete>
+<insert id="postFAQ">
+	INSERT INTO
+			tbl_faq (f_id, f_writer, f_question, f_answer, f_rdate, f_udate)
+		VALUES(
+			seq_fid.nextval,#{f_writer},#{f_question},#{f_answer}, sysdate, sysdate
+		)
+</insert>
+
+<sql id="searchFAQ">
+	<if test="searchType != null">
+		<if test="searchType == 'writer'.toString()">
+			and f_writer like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'question'.toString()">
+			and f_question like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'answer'.toString()">
+			and f_answer like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="listFAQSearchCriteria" resultType="org.spring.domain.FAQVO">
+	<![CDATA[
+	select
+		*
+	from
+		(select
+			rownum rn, f_id, f_writer, f_question, f_answer, f_rdate, f_udate
+		from 
+			(select * from tbl_faq order by f_udate desc)
+		where 
+			1=1 
+		]]>
+		<include refid="searchFAQ"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="listFAQCountSearchCriteria" resultType="int">
+	<![CDATA[
+	select count(f_id) from tbl_faq where 1=1 
+	]]>
+	<include refid="searchFAQ"></include>
+</select>
+<delete id="removeFAQs" parameterType="hashmap">
+	delete from tbl_faq where f_id in (#{f_id0},#{f_id1},#{f_id2},#{f_id3},#{f_id4},#{f_id5},#{f_id6},#{f_id7},#{f_id8},#{f_id9})
+</delete>
+<delete id="deleteUser">
+	delete from tbl_user where u_email=#{u_email}
+</delete>
+<update id="editFAQ">
+	update tbl_faq set f_question=#{f_question}, f_answer=#{f_answer}, f_udate=sysdate where f_id = #{f_id}
+</update>
+<select id="readFAQ" resultType="org.spring.domain.FAQVO">
+	select * from tbl_faq where f_id=#{f_id} 
+</select>
+<delete id="deleteFAQ">
+	delete from tbl_faq where f_id=#{f_id}
+</delete>
+</mapper>

@@ -1,0 +1,174 @@
+/*DROP USER sprproject;
+
+CREATE USER sprproject IDENTIFIED BY oracle
+DEFAULT TABLESPACE USERS
+TEMPORARY TABLESPACE temp;
+
+GRANT CONNECT, RESOURCE TO sprproject;
+*/
+set define off;
+
+DROP TABLE tbl_user CASCADE CONSTRAINTS;
+
+CREATE TABLE tbl_user(
+	u_email varchar2(200byte) not null,
+	u_name varchar2(100 byte) not null,
+	u_pwd varchar2(100 byte) not null,
+	u_rdate date default sysdate,
+	sessionkey varchar2(50) default 'none',
+	sessionlimit timestamp,
+	CONSTRAINT pk_uemail PRIMARY KEY(u_email)
+);
+
+
+DROP TABLE tbl_menu CASCADE CONSTRAINTS;
+
+CREATE TABLE tbl_menu(
+	m_id number(5) not null,
+	m_category varchar2(200byte) not null,
+	m_name varchar2(200byte) not null,
+	m_content varchar2(2000byte),
+	m_price number(20, 2),	
+	m_hit number(10) default 0,
+	m_rdate date default sysdate,
+	m_img varchar2(2000 byte),
+	m_rating number(20,1) default 0,
+	replycnt number(10,0) default 0,
+	CONSTRAINT pk_mid PRIMARY KEY(m_id)
+);
+
+DROP SEQUENCE seq_mid;
+
+CREATE SEQUENCE seq_mid START WITH 1000 INCREMENT BY 1 NOCACHE;
+
+drop table tbl_reply CASCADE CONSTRAINTS;
+
+create table tbl_reply(
+rno number,
+m_id number not null,
+replytext varchar2(2000) not null,
+replyer varchar2(100) not null,
+rating number(5,1) default 0,
+regdate date default sysdate,
+updatedate date default sysdate);
+
+alter table tbl_reply add constraint pk_reply
+primary key(rno);
+
+alter table tbl_reply add constraint fk_reply
+foreign key(m_id) references tbl_menu(m_id) ON DELETE CASCADE;
+
+drop sequence seq_reply;
+
+create sequence seq_reply nocache increment by 1 start with 1;
+
+
+DROP TABLE tbl_reservation CASCADE CONSTRAINTS;
+
+CREATE TABLE tbl_reservation(
+	r_id number(5) not null,
+	r_email varchar2(200byte) not null,
+	r_name varchar2(200byte) not null,
+	r_phone varchar2(200byte) not null,
+	r_message varchar2(2000byte),
+	r_date varchar2(200byte) not null,
+	r_time number(10) not null,
+	r_people number(10) not null,	
+	CONSTRAINT pk_rid PRIMARY KEY(r_id)
+);
+
+ALTER TABLE tbl_reservation ADD CONSTRAINT uk_r_email UNIQUE(r_email)
+
+alter table tbl_reservation add constraint fk_reservation
+foreign key(r_email) references tbl_user(u_email) ON DELETE CASCADE;
+
+DROP SEQUENCE seq_rid;
+
+CREATE SEQUENCE seq_rid START WITH 1000 INCREMENT BY 1 NOCACHE;
+
+DROP TABLE tbl_faq CASCADE CONSTRAINTS;
+
+CREATE TABLE tbl_faq(
+	f_id number(5) not null,
+	f_writer varchar2(200byte) not null,
+	f_question varchar2(500byte) not null,
+	f_answer varchar2(2000byte) not null,
+	f_rdate date default sysdate,
+	f_udate date default sysdate,
+	CONSTRAINT pk_fid PRIMARY KEY(f_id)	
+);
+
+alter table tbl_faq add constraint fk_faq
+foreign key(f_writer) references tbl_user(u_email) ON DELETE CASCADE;
+
+DROP SEQUENCE seq_fid;
+
+CREATE SEQUENCE seq_fid START WITH 1 INCREMENT BY 1 NOCACHE;
+
+commit;
+
+
+
+
+
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('admin@songjjuzip.com', 'admin','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('jaesay@naver.com', 'KimJaeSeong','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('edward@naver.com', 'Edward','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('kate@naver.com', 'Kate','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('ellen@daum.co.kr', 'Ellen','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('mike@naver.com', 'Mike','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('david@ajou.ac.kr', 'David','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('daniel@naver.com', 'Daniel','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('ran@naver.com', 'Ran','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('ina@naver.com', 'Ina','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('silva@naver.com', 'Silva','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('lucy@naver.com', 'Lucy','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('son@ajou.ac.kr', 'son','123');
+insert into tbl_user(u_email, u_name, u_pwd)
+values ('jane@naver.com', 'Jane','123');
+
+
+insert into tbl_menu(m_id,m_category,m_name,m_content,m_price,m_img)
+values (seq_mid.nextval, 'Main', 'jjuggumi', 'The food can be enjoyed from children to adults. You can eat cheese or nalchial fried rice after having the jjuggumi with just $2',10, 'http://jaesay.dothome.co.kr/springImg/Main/jju.png');
+insert into tbl_menu(m_id,m_category,m_name,m_content,m_price,m_img)
+values (seq_mid.nextval, 'Main', 'jjuggumi+folk', 'The food can be enjoyed from children to adults. You can eat cheese or nalchial fried rice after having the jjuggumi with just $2',14, 'http://jaesay.dothome.co.kr/springImg/Main/jjusa.png');
+insert into tbl_menu(m_id,m_category,m_name,m_content,m_price,m_img)
+values (seq_mid.nextval, 'Main', 'jjuggumi+cheese', 'The food can be enjoyed from children to adults. You can eat cheese or nalchial fried rice after having the jjuggumi with just $2',11, 'http://jaesay.dothome.co.kr/springImg/Main/jjuchi.png');
+insert into tbl_menu(m_id,m_category,m_name,m_content,m_price,m_img)
+values (seq_mid.nextval, 'Main', 'jju+folk+cheese', 'The food can be enjoyed from children to adults. You can eat cheese or nalchial fried rice after having the jjuggumi with just $2',15, 'http://jaesay.dothome.co.kr/springImg/Main/jjusachi.png');
+insert into tbl_menu(m_id,m_category,m_name,m_content,m_price,m_img)
+values (seq_mid.nextval, 'Special', 'fried shrimp', 'You can enjoy very big fried shrimps with just $4',4, 'http://jaesay.dothome.co.kr/springImg/Special/sae.png');
+
+
+insert into tbl_faq(f_id, f_writer, f_question,f_answer)
+values (seq_fid.nextval, 'admin@songjjuzip.com','Where is your restaurant?','126, Convensia-daero, Yeonsu-gu, Incheon, Republic of Korea');
+insert into tbl_faq(f_id, f_writer, f_question,f_answer)
+values (seq_fid.nextval, 'admin@songjjuzip.com','How can I find my id or password?','Our registration is very simple. We do not request your detail info to find them. So email to admin');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

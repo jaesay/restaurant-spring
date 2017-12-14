@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.spring.mapper.FAQMapper">
+<sql id="searchFAQ">
+	<if test="searchType != null">
+		<if test="searchType == 'question'.toString()">
+			and f_question like '%' || #{keyword} || '%'
+		</if>
+		<if test="searchType == 'answer'.toString()">
+			and f_answer like '%' || #{keyword} || '%'
+		</if>
+	</if>
+</sql>
+<select id="listFAQSearchCriteria" resultType="org.spring.domain.FAQVO">
+	<![CDATA[
+	select
+		*
+	from
+		(select
+			rownum rn, f_id, f_writer, f_question, f_answer, f_rdate, f_udate
+		from 
+			(select * from tbl_faq order by f_udate desc)
+		where 
+			1=1 
+		]]>
+		<include refid="searchFAQ"></include>
+		<![CDATA[
+		and rownum <= #{page} * #{perPageNum}
+		)
+	where rn > (#{page}-1) * #{perPageNum}
+	]]>
+</select>
+<select id="listFAQCountSearchCriteria" resultType="int">
+	<![CDATA[
+	select count(f_id) from tbl_faq where 1=1 
+	]]>
+	<include refid="searchFAQ"></include>
+</select>
+</mapper>

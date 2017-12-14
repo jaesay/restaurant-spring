@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.spring.mapper.ReservationMapper">
+<insert id="insertReservation">
+	insert into tbl_reservation (r_id, r_email, r_name, r_phone, r_message, r_date, r_time, r_people)
+	values (seq_rid.nextval, #{r_email}, #{r_name}, #{r_phone}, #{r_message}, #{r_date},#{r_time},#{r_people})
+	<selectKey keyProperty="r_id" resultType="Integer" order="AFTER">
+		SELECT seq_rid.currval FROM dual
+	</selectKey>
+</insert>
+<select id="checkReservation" resultType="org.spring.domain.ReservationVO">
+	select * from tbl_reservation where r_email=#{r_email}
+</select>
+</mapper>
